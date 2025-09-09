@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import SearchBar from "./SearchBar";
 import BookList from "./BookList";
@@ -9,32 +8,58 @@ export default function BookFinder() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [filters, setFilters] = useState({ genre: "", author: "" });
+  const [filters, setFilters] = useState({
+    author: "",
+    ebook: "",
+    language: "",
+    year: ""
+  });
 
   const searchBooks = async () => {
     if (!query.trim()) return;
     setLoading(true);
     setError("");
-    setBooks([]);
     try {
-      const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`);
+      const res = await fetch(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`
+      );
       const data = await res.json();
       let results = data.docs.slice(0, 30);
 
-      if (filters.genre) {
-        results = results.filter((book) =>
-          filters.genre === "Fiction"
-            ? book.subject?.includes("Fiction")
-            : !book.subject?.includes("Fiction")
-        );
-      }
+    
+    // Author
+    if (filters.author) {
+      results = results.filter((book) =>
+        book.author_name?.some((a) =>
+          a.toLowerCase().includes(filters.author.toLowerCase())
+        )
+      );
+    }
 
-      if (filters.author) {
-        results = results.filter((book) =>
-          book.author_name?.some((a) => a.toLowerCase().includes(filters.author.toLowerCase()))
-        );
-      }
+    // Ebook
+    if (filters.ebook) {
+      results = results.filter((book) =>
+        filters.ebook === "ebooks"
+          ? book.ebook_count_i > 0
+          : book.ebook_count_i === 0
+      );
+    }
 
+    // Language
+    if (filters.language) {
+      results = results.filter((book) =>
+        book.language?.includes(filters.language.toLowerCase())
+      );
+    }
+
+    // Year
+    if (filters.year) {
+      results = results.filter(
+        (book) =>
+          book.first_publish_year &&
+          book.first_publish_year >= parseInt(filters.year)
+      );
+    }
       setBooks(results);
     } catch (err) {
       setError("Failed to fetch books. Please try again.");
@@ -43,31 +68,25 @@ export default function BookFinder() {
   };
 
   const resetFilters = () => {
-    setFilters({ genre: "", author: "" });
+    setFilters({ genre: "", author: "", ebook: "", language: "", year: "" });
     setBooks([]);
   };
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-6 p-6">
-      <aside className="w-full hidden md:block md:w-1/4 bg-white p-5 rounded-xl shadow-md">
+      <aside className="hidden md:block w-1/2 bg-white p-5 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">Filters</h2>
         <Filters filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
       </aside>
-      {/* <div className="">
-         <Filters filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
-      </div> */}
-      
+
       <main className="w-full md:w-3/4">
-        <header className="flex justify-between items-center m-auto mb-6 border-b pb-3">
+        <header className="flex justify-between items-center mb-6 border-b pb-3">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <span role="img" aria-label="book">📚</span> BookFinder
           </h1>
-          {/* <a href="#about" className="text-gray-600 hover:text-blue-600 font-medium">About</a> */}
-            <span className="block md:hidden">
-              <Filters filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
-            </span>
-            
-          
+          <span className="block md:hidden">
+            <Filters filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
+          </span>
         </header>
 
         <SearchBar query={query} setQuery={setQuery} onSearch={searchBooks} />
