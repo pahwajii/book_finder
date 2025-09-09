@@ -25,20 +25,35 @@ Built with a responsive design, this app allows users to quickly search for book
 
 book-finder
 ┣ 📂 public
+
 ┃ ┗ 📜 Gemini_Generated_Image.png # App logo
+
 ┣ 📂 src
+
 ┃ ┣ 📂 components
+
 ┃ ┃ ┣ 📜 BookCard.jsx # Card UI for a single book
+
 ┃ ┃ ┣ 📜 BookFinder.jsx # Main search + filter + state management
+
 ┃ ┃ ┣ 📜 BookList.jsx # Grid of BookCards
+
 ┃ ┃ ┣ 📜 Filters.jsx # Sidebar + mobile filter functionality
+
 ┃ ┃ ┗ 📜 SearchBar.jsx # Search input + button
+
 ┃ ┣ 📂 pages
+
 ┃ ┃ ┗ 📜 Home.jsx # Main page with header, footer, and BookFinder
+
 ┃ ┗ 📜 main.jsx # React entry point
+
 ┣ 📜 index.html
+
 ┣ 📜 package.json
+
 ┗ 📜 tailwind.config.js
+
 
 
 ---
